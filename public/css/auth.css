@@ -1,0 +1,35 @@
+.auth-card {
+    max-width: 450px;
+    margin: 2rem auto;
+}
+
+.auth-card .card-body {
+    padding: 2rem;
+}
+
+.auth-card .bi {
+    font-size: 3rem;
+    color: var(--primary);
+}
+
+.auth-card h2 {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.auth-card .form-label {
+    font-weight: 500;
+}
+
+.auth-card .input-group-text {
+    background-color: transparent;
+}
+
+.auth-card .btn-lg {
+    padding: 0.75rem 1.25rem;
+}
+
+.auth-card .invalid-feedback {
+    display: block;
+}

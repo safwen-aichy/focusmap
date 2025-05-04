@@ -78,4 +78,32 @@ class GoalController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Goal deleted successfully.');
     }
+
+    public function complete(Request $request, Goal $goal)
+{
+    // Ensure the authenticated user owns the goal
+    if ($goal->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    $goal->progress = 100;
+    $goal->status = 'completed'; // Optional if using a status column
+    $goal->save();
+
+    return redirect()->back()->with('success', 'Goal marked as complete!');
+}
+
+    public function uncomplete(Request $request, Goal $goal)
+    {
+        // Ensure the authenticated user owns the goal
+        if ($goal->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $goal->progress = 0;
+        $goal->status = 'active'; // Optional if using a status column
+        $goal->save();
+
+        return redirect()->back()->with('success', 'Goal marked as incomplete!');
+    }
 }

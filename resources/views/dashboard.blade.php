@@ -118,6 +118,13 @@
         </div>
     </div>
     
+    <!-- Map for Location -->
+    <div class="mb-3">
+        <label class="form-label">Your Current Position</label>
+        <p id="mapText" class="text-muted"></p>
+        <div id="map2" style="height: 300px"></div>
+    </div>    
+
     <!-- Calendar Section -->
     <div class="row mb-4">
         <div class="col-12">
@@ -547,7 +554,31 @@
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    var marker;
+    var goalIcon = L.icon({
+            iconUrl: 'https://i.imgur.com/Fam1t45.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, 0],
+        });
+
+    function success(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        var marker = L.marker([latitude, longitude], {icon: goalIcon}).addTo(map);
+    }
+
+    function error() {
+        status.innerHTML = "Unable to retrieve your location";
+    }
+
+
+    if (!navigator.geolocation) {
+        status.innerHTML = "Geolocation is not supported by your browser";
+    } else {
+        status.innerHTML = "This is your current position:";
+        navigator.geolocation.getCurrentPosition(success, error);
+    }
 
     map.on('click', function(e) {
         var lat = e.latlng.lat;
@@ -560,13 +591,68 @@
             map.removeLayer(marker);
         }
 
-        marker = L.marker([lat, lng]).addTo(map);
+        marker = map.whenReady(() => {L.marker([lat, lng], {icon:goalIcon}).addTo(map);});
     });
 
     // Fix the map rendering issue when modal is opened
     $('#goalModal').on('shown.bs.modal', function () {
         map.invalidateSize();  // Refresh the map
     });
+});
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    
+    const status = document.getElementById('mapText');
+    var map2 = L.map('map2').setView([20, 0], 2); // Default world center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map2);
+
+    function success(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        var humanIcon = L.icon({
+            iconUrl: 'https://i.imgur.com/ImLS4Bv.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, 0],
+        });
+
+        var marker = map2.whenReady(() => {L.marker([latitude, longitude], {icon: humanIcon}).addTo(map2);});
+    }
+
+    function error() {
+        status.innerHTML = "Unable to retrieve your location";
+    }
+
+
+    if (!navigator.geolocation) {
+        status.innerHTML = "Geolocation is not supported by your browser";
+    } else {
+        status.innerHTML = "This is your current position:";
+        navigator.geolocation.getCurrentPosition(success, error);
+    }
+
+    var goalIcon = L.icon({
+        iconUrl: 'https://i.imgur.com/Fam1t45.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -16],
+    });
+
+    @if ($goals->count() > 0)
+        @foreach($goals as $goal)
+            console.log("{{ $goal->location_latitude }}, {{ $goal->location_longitude }}");
+            var goalMarker = L.marker([{{ $goal->location_latitude }}, {{ $goal->location_longitude }}], {icon: goalIcon}).addTo(map2);
+            goalMarker.bindPopup('<strong>{{ $goal->title }}</strong><br>{{ $goal->description }}');
+        @endforeach
+    @endif
+    
 });
 </script>
 @endpush

@@ -31,7 +31,6 @@ class StepController extends Controller
             'goal_id' => 'required|exists:goals,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'deadline' => 'nullable|date',
         ]);
 
         // Check if the goal belongs to the authenticated user
@@ -43,11 +42,11 @@ class StepController extends Controller
         // Create the step
         $step = Step::create([
             'goal_id' => $request->goal_id,
-            'title' => $request->suggestion,
+            'title' => $request->title,
         ]);
 
         // Update the goal's progress
-        $goal->updateProgress();
+        //$goal->updateProgress();
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -115,7 +114,7 @@ class StepController extends Controller
         ]);
 
         // Update the goal's progress
-        $step->goal->updateProgress();
+        //$step->goal->updateProgress();
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -139,7 +138,7 @@ class StepController extends Controller
         $step->delete();
 
         // Update the goal's progress
-        $goal->updateProgress();
+        //$goal->updateProgress();
 
         if (request()->expectsJson()) {
             return response()->json([

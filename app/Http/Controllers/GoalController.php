@@ -44,6 +44,13 @@ class GoalController extends Controller
         return view('goals.edit', compact('goal'));
     }
 
+    public function show(Goal $goal)
+    {
+        //$this->authorize('update', $goal);
+
+        return view('goals.edit', compact('goal'));
+    }
+
     public function update(Request $request, Goal $goal)
     {
         //$this->authorize('update', $goal);
@@ -51,7 +58,8 @@ class GoalController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'location' => 'nullable|string|max:255',
+            'location_latitude' => 'nullable|string|max:255',
+            'location_longitude' => 'nullable|string|max:255',
             'target_date' => 'nullable|date',
             'visibility' => 'required|in:private,public,friends',
             'progress' => 'nullable|integer|min:0|max:100',

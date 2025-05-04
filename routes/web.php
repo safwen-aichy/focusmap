@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('motivation', MotivationController::class)->except(['create', 'store', 'show']);
 
     Route::resource('steps', StepController::class);
+    Route::patch('/steps/{step}/toggle', [StepController::class, 'toggle'])->name('steps.toggle');
 });
 
 require __DIR__.'/auth.php';

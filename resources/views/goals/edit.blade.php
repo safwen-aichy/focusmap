@@ -157,7 +157,7 @@
                         <!-- Map for Location -->
                         <div class="mb-3">
                             <label class="form-label">Choose Location</label>
-                            <div id="map" style="height: 300px;"></div>
+                            <div id="goalMap" style="height: 300px;"></div>
                         </div>
 
                         <!-- Hidden Latitude/Longitude -->
@@ -197,7 +197,7 @@
                                             </button>
                                         </form>
                                         <span class="{{ $step->completed ? 'text-decoration-line-through text-muted' : '' }}">
-                                            {{ $step->description }}
+                                            {{ $step->title }}
                                         </span>
                                     </div>
                                     <div class="d-flex align-items-center">
@@ -362,6 +362,11 @@
                 <input type="hidden" name="goal_id" value="{{ $goal->id }}">
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="step_title" class="form-label">Step Title</label>
+                        <input type="text" class="form-control" id="step_title" name="title" placeholder="Enter step title" required>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="step_description" class="form-label">Step Description</label>
                         <textarea class="form-control" id="step_description" name="description" rows="3" placeholder="Describe what needs to be done" required></textarea>
                     </div>
@@ -387,6 +392,11 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_step_description" class="form-label">Step Title</label>
+                        <input type="text" name="title" id="title" class="form-control" value='{{$step->title}}'></input>
+                    </div>
+                
                     <div class="mb-3">
                         <label for="edit_step_description" class="form-label">Step Description</label>
                         <textarea class="form-control" id="edit_step_description" name="description" rows="3" required></textarea>
@@ -441,7 +451,7 @@
                 fetch(URL, {
                     method: 'POST',
                     headers: {
-                        "Authorization": "Bearer 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",
+                        "Authorization": "Bearer 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",
                         'Content-Type': 'application/json',
                         //'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
@@ -452,7 +462,7 @@
                             "role": "user",
                             "content": "Suggestion steps to achieve  {{$goal->title}} objective. Give me only the steps in the response and format the response in a way I can breakdown the string using Javascript using & symbol"
                         }
-                    ],
+                        ],
                     })
                 })
                 .then(response => response.json())
@@ -477,7 +487,7 @@
                                         <form action="{{ route('steps.store') }}" method="POST" class="ms-2">
                                             @csrf
                                             <input type="hidden" name="goal_id" value="{{ $goal->id }}">
-                                            <input type="hidden" name="description" value="${suggestion}">
+                                            <input type="hidden" name="title" value="${suggestion}">
                                             <button type="submit" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-plus"></i> Add
                                             </button>
@@ -522,17 +532,26 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    var map = L.map('map').setView(['{{ $goal->location_latitude}}', '{{ $goal->location_latitude}}'], 2); // Default world center
+    var goalMap = L.map('goalMap').setView([20, 0], 2); // Default world center
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    }).addTo(goalMap);
+
+
+    var goalIcon = L.icon({
+            iconUrl: 'https://i.imgur.com/Fam1t45.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, 0],
+        });
 
     var marker;
 
-    marker = L.marker(['{{ $goal->location_latitude}}', '{{ $goal->location_latitude}}']).addTo(map);
+    console.log("Latitude: {{ $goal->location_latitude}}, {{ $goal->location_longitude}}");
+    marker = L.marker([{{ $goal->location_latitude }}, {{ $goal->location_longitude }}], {icon: goalIcon}).addTo(goalMap);
 
-    map.on('click', function(e) {
+    goalMap.on('click', function(e) {
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
 
@@ -540,10 +559,9 @@
         document.getElementById('location_longitude').value = lng;
 
         if (marker) {
-            map.removeLayer(marker);
+            goalMap.removeLayer(marker);
         }
-
-        marker = L.marker([lat, lng]).addTo(map);
+        marker = L.marker([lat, lng], {icon:goalIcon}).addTo(goalMap);
     });
 });
 </script>

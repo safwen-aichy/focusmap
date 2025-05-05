@@ -394,7 +394,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="edit_step_description" class="form-label">Step Title</label>
-                        <input type="text" name="title" id="title" class="form-control" value='{{$step->title}}'></input>
+                        @if (isset($step) AND $step->title)
+                            <span class="text-decoration-line-through text-muted">{{ $step->title }}</span>
+                            <input type="text" name="title" id="title" class="form-control" value='{{$step->title}}'></input>
+                        @else
+                            <span class="text-decoration-line-through text-muted"></span>
+                            <input type="text" name="title" id="title" class="form-control" value=''></input>
+                        @endif
                     </div>
                 
                     <div class="mb-3">
@@ -451,7 +457,7 @@
                 fetch(URL, {
                     method: 'POST',
                     headers: {
-                        "Authorization": "Bearer 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",
+                        "Authorization": "Bearer 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",
                         'Content-Type': 'application/json',
                         //'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
